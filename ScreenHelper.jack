@@ -1,0 +1,25 @@
+class ScreenHelper {
+    /** Constructor for ScreenHelper */
+    function ScreenHelper new() {
+        var ScreenHelper instance;
+        let instance = Memory.alloc(1);  // Allocate memory for one object
+        return instance;
+    }
+
+    /** Sets the entire screen background to black */
+    method void setBackgroundBlack() {
+        var int i;
+        let i = 0;
+        while (i < 8192) {  
+            do Memory.poke(16384 + i, -1);  // Fill screen memory with black
+            let i = i + 1;
+        }
+        return;
+    }
+
+    /** Destructor to free memory */
+    method void dispose() {
+        do Memory.deAlloc(this);  // Free memory
+        return;
+    }
+}

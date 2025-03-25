@@ -1,0 +1,16 @@
+class Main {
+    /** Initializes a new game and starts it. */    
+    function void main() {
+        var ScreenHelper helper;
+        let helper = ScreenHelper.new();   // Create an instance
+        do helper.setBackgroundBlack();    // Call method on instance
+        do helper.dispose();               // Free memory
+
+        var SpaceGame game;
+        let game = SpaceGame.new();
+        do game.run();
+        do game.dispose();
+
+        return;
+    }
+}
