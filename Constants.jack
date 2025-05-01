@@ -1,0 +1,50 @@
+class Constants {
+    static int START_X;
+    static int END_X;
+
+    function void init() {
+        do Memory.poke(0, 0); // Initialize START_X
+        do Memory.poke(1, 224); // Initialize END_X
+        return;
+    }
+
+    function int getSTART_X() {
+        return START_X;
+    }
+
+    function int getEND_X() {
+        return START_X + END_X;
+    }
+
+    function int getSTART_Y() {
+        return 0;
+    }
+
+    function int getEND_Y() {
+        return 255;
+    }
+
+    function int getWIDTH() {
+        return END_X;
+    }
+
+    function int get_PlayerY() {
+        return 223;
+    }
+
+    function int get_EarthY() {
+        return 239;
+    }
+
+    function int get_BoardStartY() {
+        return 44;
+    }
+
+    function int getSCORE_X() {
+        return 1;
+    }
+
+    function int getSCORE_Y() {
+        return 199;
+    }
+}

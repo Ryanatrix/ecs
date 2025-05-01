@@ -1,0 +1,113 @@
+class AlienShot {
+    static int PLUNGER, ROLLER, SQUIGGLY;
+    static int SPRITE1, SPRITE2, SPRITE3, SPRITE4, SPRITE_EXPLOSION;
+
+    field int type, x, y, ticks, spriteSet;
+    field boolean active;
+
+    // Static Initialization - Jack does NOT support static assignment in functions
+    function void init() {
+        let PLUNGER = 0;
+        let ROLLER = 1;
+        let SQUIGGLY = 2;
+        let SPRITE1 = 3;
+        let SPRITE2 = 4;
+        let SPRITE3 = 5;
+        let SPRITE4 = 6;
+        let SPRITE_EXPLOSION = 7;
+        return;
+    }
+
+    // Constructor using Memory.alloc
+    constructor AlienShot new(int shotType, int startX, int startY) {
+        let type = shotType;
+        let x = startX;
+        let y = startY;
+        let active = true;
+        let ticks = 0;
+        if (type = PLUNGER) {
+            let spriteSet = SPRITE1;
+        } 
+        if (type = ROLLER) {
+            let spriteSet = SPRITE2;
+        }
+        if (type = SQUIGGLY) {
+            let spriteSet = SPRITE3;
+        }
+
+        return this;
+    }
+
+    // Properly disposing the object
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    // Getter functions
+    function int getPLUNGER() { return PLUNGER; }
+    function int getROLLER() { return ROLLER; }
+    function int getSQUIGGLY() { return SQUIGGLY; }
+
+    // Fire function (start at specific position)
+    method void fire(int startX, int startY) {
+        let x = startX;
+        let y = startY + 8;
+        let active = true;
+        return;
+    }
+
+    // Tick related functions
+    method int getTicks() { return ticks; }
+    method void resetTicks() { let ticks = 0; return; }
+
+    method boolean tick() {
+        if (~active) { 
+            return false; 
+        }
+        let ticks = ticks + 1;
+        let y = y + 4;
+        if (y > (Constants.get_EarthY() - 7)) { // Fixed function name
+            let type = SPRITE_EXPLOSION;
+            return false;
+        }
+        return true;
+    }
+
+    // Returns whether the shot is still active
+    method boolean isActive() {
+        return active;
+    }
+
+    // Get position functions
+    method int getX() { return x; }
+    method int getY() { return y; }
+
+    // Draw the shot on the screen
+    method void draw() {
+        if (active) {
+            do Screen.drawRectangle(x, y, x + 2, y + 4); // Example rendering
+        }
+        return;
+    }
+
+    // Check for collision with a missile
+    method boolean checkCollision(int missileY) {
+        if (active & (y > missileY) & (y < missileY + 4)) {
+            let active = false; // Deactivate the shot on collision
+            return true;
+        }
+        return false;
+    }
+
+    // Update the shot's state and check for a hit
+    method boolean update() {
+        if (active) {
+            if (y < 10) {
+                let active = false;
+                return true; // Indicate that a hit occurred
+            }
+        }
+        return false;
+    }
+}

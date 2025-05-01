@@ -1,0 +1,118 @@
+class Missle {
+    static int spriteIndex;
+    static Array sprite1, sprite2;
+    static int STATE_INACTIVE, STATE_ACTIVE, STATE_BLOWING_UP, STATE_ERASE, MOVE_STEP;
+
+    field int x, y;
+    field int state, keyCode;
+
+    // Initializes the Missle class
+    function void init() {
+        let spriteIndex = 32;
+
+        let STATE_INACTIVE = 0;
+        let STATE_ACTIVE = 1;
+        let STATE_BLOWING_UP = 2;
+        let STATE_ERASE = 3;
+        let MOVE_STEP = 4;
+
+        let sprite1 = Sprites.createSprite(-129, -129, -129, -1, -1, -1, -1, -1);
+        let sprite2 = Sprites.createSprite(-2321, -1089, -2017, -4081, -4081, -2017, -577, -2193);
+        return;
+    }
+
+    // Creates a new missile instance
+    constructor Missle new() {
+        
+        do Memory.alloc(4);
+        let state = STATE_INACTIVE;
+	let keyCode = 0;
+        
+        return this;
+    }
+
+    // Frees the missile instance
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    // Gets the X coordinate of the missile
+    method int getX() {
+        return x + 8;
+    }
+
+    // Gets the Y coordinate of the missile
+    method int getY() {
+        return y;
+    }
+
+    // Checks if the missile is active
+    method boolean isActive() {
+        return state = STATE_ACTIVE;
+    }
+
+    // Handles missile shot based on key presses
+    method boolean handleShot(int key) {
+        if (keyCode = key) {
+            return false;
+        }
+
+        if ((state = STATE_INACTIVE) & (key = spriteIndex)) {
+            let state = STATE_ACTIVE;
+        }
+        let keyCode = key;
+
+        return state = STATE_ACTIVE;
+    }
+
+    // Sets the missile to "blowing up" state
+    method void setBlowingUp() {
+        let state = STATE_BLOWING_UP;
+        return;
+    }
+
+    // Ticks the missile state machine
+    method boolean tick(int newX) {
+        if (state = STATE_ACTIVE) {
+            let x = newX;
+            let y = Constants.get_PlayerY();
+            let state = STATE_ACTIVE;
+
+            do Sprites.drawSpriteXOR(sprite1, x, y);
+            return false;
+        }
+
+        if (state = STATE_ACTIVE) {
+            do Sprites.eraseSprite(sprite1, x, y);
+            let y = y - MOVE_STEP;
+
+            if (y < Constants.get_BoardStartY()) {
+                let state = STATE_BLOWING_UP;
+                let y = Constants.get_BoardStartY();
+                return false;
+            }
+
+            if (Sprites.drawSpriteXOR(sprite1, x, y)) {
+                do Sprites.eraseSprite(sprite1, x, y);
+                let state = STATE_INACTIVE;
+                return true;
+            }
+            return false;
+        }
+
+        if (state = STATE_BLOWING_UP) {
+            do Sprites.drawSpriteXOR(sprite2, x, y);
+            let state = STATE_ERASE;
+            return false;
+        }
+
+        if (state = STATE_ERASE) {
+            do Sprites.eraseSprite(sprite2, x, y);
+            let state = STATE_INACTIVE;
+            return false;
+        }
+
+        return false;
+    }
+}

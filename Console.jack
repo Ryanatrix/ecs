@@ -1,0 +1,39 @@
+class Console {
+    static int cursorY;
+
+    /** Initializes the console */
+    function void init() {
+        do Output.moveCursor(cursorY, 32);
+        return;
+    }
+
+    /** Prints a string and disposes it */
+    function void printString(String s) {
+        do Output.printString(s);
+        do String.dispose(s);
+        return;
+    }
+
+    /** Prints an integer */
+    function void printInt(int value) {
+        do Output.printInt(value);
+        return;
+    }
+
+    /** Moves to a new line and clears the screen if needed */
+    function void println() {
+        var boolean tooFar;
+
+        let cursorY = cursorY + 1;
+        let tooFar = cursorY > 30;
+
+        if (tooFar) {
+            do Screen.setColor(0);
+            do Screen.drawRectangle(256, 0, 511, 255);
+            let cursorY = 0;
+        }
+
+        do Output.moveCursor(cursorY, 32);
+        return;
+    }
+}

@@ -1,16 +1,71 @@
 class Main {
-    /** Initializes a new game and starts it. */    
-    function void main() {
-        var ScreenHelper helper;
-        let helper = ScreenHelper.new();   // Create an instance
-        do helper.setBackgroundBlack();    // Call method on instance
-        do helper.dispose();               // Free memory
 
-        var SpaceGame game;
-        let game = SpaceGame.new();
-        do game.run();
-        do game.dispose();
+    function void init() {
+	var AlienShots alienShotInstance;
+	var Rack rackInstance;
+	var Game gameInstance;
+        do Console.init();
+        do Constants.init();
+	let gameInstance = Game.new();     
+	do gameInstance.init();           
+        do Sprites.init();
+	let rackInstance = Rack.new(0,0,100,50); 
+	do rackInstance.init();   
+        do Cannon.init();
+        do Missle.init();
+        do AlienShot.init();
+	let alienShotInstance = AlienShots.new();
+	do alienShotInstance.init(); 
+        do Alien.init();
+        do Screen.setColor(true);
+        return;
+    }
 
+    method void main() {
+	var Game gameInstance;
+        var Game game;
+        do Main.init();
+	let gameInstance = Game.new(); // Create an instance of the Game class
+	do gameInstance.drawFrame();   // Call the drawFrame method on that instance
+        while (true) {
+            if (Keyboard.keyPressed() = 0) {
+                while (~(Keyboard.keyPressed() = 0)) {}
+                let game = Game.new();
+                do game.run();
+                do game.drawGameOver();
+            }
+
+            if (~(Keyboard.keyPressed() = 0)) {
+                do Sys.wait(100);
+            }
+        }
+        return;
+    }
+
+    function void debugMain() {
+        var Array sprite1, sprite2;
+        var int x, y;
+        let sprite1 = Sprites.createSprite(-129, -65, -129, -257, -129, -65, -129, -1);
+        let sprite2 = Sprites.createSprite(-2321, -1089, -2017, -4081, -4081, -2017, -577, -2193);
+        let x = 32;
+        let y = 32;
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + 16, y + 8);
+        let x = x + 4;
+        let y = y - 4;
+        do Sprites.drawSpriteXOR(sprite2, x, y);
+        do Sprites.eraseSprite(sprite2, x, y);
+        do Screen.setColor(true);
+        do Screen.drawRectangle(256, 0, 511, 255);
+        do Output.moveCursor(0, 0);
+        do Output.printString(String.new("HELLO"));
+        do Output.moveCursor(16, 40);
+        do Output.printString(String.new("HELLO"));
+        let x = 0;
+        while (x < 5) {
+            do Util.reverseChar(16, 40 + x);
+            let x = x + 1;
+        }
         return;
     }
 }

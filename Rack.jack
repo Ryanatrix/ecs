@@ -1,0 +1,79 @@
+// Rack.jack
+
+class Rack {
+    field int x, y;         // Position of the rack
+    field int width, height;  // Dimensions of the rack
+    field Array parts;        // Array of parts (Array.jack must be in your project)
+
+    // Constructor: Creates a new Rack instance with the given dimensions and position.
+    constructor Rack new(int w, int h, int x_pos, int y_pos) {
+        let width = w;
+        let height = h;
+        let x = x_pos;
+        let y = y_pos;
+        // Instantiate the parts array using the correct syntax.
+        let parts = Array.new(w);
+        return this;
+    }
+
+    // Initializes the rack with default values.
+    method void init() {
+        let x = 0;
+        let y = 0;
+        let width = 100;
+        let height = 50;
+        // Instantiate parts with the default width.
+        let parts = Array.new(width);
+        return;
+    }
+
+    // Adds a part to the rack.
+    method void addPart(int part) {
+        // Assume that Array.jack provides a "set(index, value)" method.
+        do parts.set(x, part);
+        let x = x + 1;
+        return;
+    }
+
+    // Disposes of the rack by resetting fields.
+    method void dispose() {
+        let parts = null;
+        let x = 0;
+        let y = 0;
+        let width = 0;
+        let height = 0;
+        return;
+    }
+
+    // Draws the rack (for output or debugging).
+    method void draw() {
+        do Output.printInt(x);
+        do Output.printInt(y);
+        do Output.printInt(width);
+        do Output.printInt(height);
+        return;
+    }
+
+    // Returns the maximum X coordinate (right edge of the rack).
+    method int getMaxX() {
+        return x + width;
+    }
+
+    // Returns the minimum X coordinate (left edge of the rack).
+    method int getMinX() {
+        return x;
+    }
+
+    // Returns the reference Y coordinate.
+    method int getRefY() {
+        return y;
+    }
+
+    // Handles collision by moving the rack if the part is negative.
+    method void handleCollision(int part) {
+        if (part < 0) {
+            let x = x + 1;
+        }
+        return;
+    }
+}

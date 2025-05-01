@@ -1,0 +1,136 @@
+class Game {
+    static int static0, static1, static2;
+    field int field0, field1, field2;
+    field Game g;
+    field int collisionResult;
+
+    function void new() {
+        do g.init();
+        return;
+    }
+
+    method void run() {
+        var int livesLeft, score, gameOverFlag, currentTime, key;
+        let livesLeft = 3;
+        let score = 0;
+        let gameOverFlag = 0;
+
+        while ((gameOverFlag = 0) & (livesLeft > 0)) {
+            do g.drawFrame();
+            let key = Keyboard.keyPressed();
+            
+            // Handle keypresses
+            if (key = 131) {
+                do g.moveCannonLeft();
+            }
+            if (key = 132) {
+                do g.moveCannonRight();
+            }
+            if (key = 133) {
+                do g.fireCannon();
+            }
+
+            // Handle collision and score updates
+            let collisionResult = g.updateAlienShots();
+            if (collisionResult = 1) {
+                let livesLeft = livesLeft - 1;
+            }
+
+            let collisionResult = g.updateMissile();
+            if (collisionResult = 1) {
+                let score = score + 1;
+            }
+
+            do Sys.wait(100);  // Game tick delay
+        }
+
+        // Game Over state
+        do g.drawGameOver();
+        return;
+    }
+
+    method void init() {
+	var AlienShots alienShotObj;
+        var int i, j;
+        do Memory.init();
+        do Screen.clear();
+        do Sprites.loadSprites();
+
+        // Initialize cannon, missile, and AlienShots
+        let field0 = 0; // x-position of cannon
+        let field1 = 0; // y-position of missile
+        let field2 = 0; // missile active flag
+
+	let alienShotObj = AlienShots.new();
+	do alienShotObj.init(); // Correct: calling method on the instance
+        return;
+    }
+
+     method void drawFrame() {
+	var AlienShots alienShotObj;
+        do Screen.clear();
+        do Sprites.drawCannon(field0, 450);  // Draw cannon at a fixed y-position (450)
+        do Sprites.drawMissile(field0, field1); // Draw missile at its current position
+	let alienShotObj = AlienShots.new();
+	do alienShotObj.draw();
+        return;
+    }
+
+    method void moveCannonLeft() {
+        if (field0 > 0) {
+            let field0 = field0 - 1;  // Move cannon left
+        }
+        return;
+    }
+
+    method void moveCannonRight() {
+        if (field0 < 510) {
+            let field0 = field0 + 1;  // Move cannon right
+        }
+        return;
+    }
+
+    method void fireCannon() {
+        if (field2 = 0) {  // Fire missile if not already active
+            let field1 = 400;  // Reset missile's y-position
+            let field2 = 1;    // Set missile active flag
+        }
+        return;
+    }
+
+    method int updateMissile() {
+	var AlienShots alienShotObj;
+	var boolean hit;
+        var int hit;
+        if (field2 = 1) {  // Missile is active
+            let field1 = field1 - 5;  // Move missile up
+            if (field1 < 0) {  // Missile goes off screen
+                let field2 = 0;  // Deactivate missile
+            }
+	let alienShotObj = AlienShots.new();
+	do alienShotObj.init();
+	let hit = alienShotObj.checkCollision(field1);
+            if (hit = 1) {  // If hit, deactivate missile
+                let field2 = 0;
+                return 1;  // Return 1 to indicate a hit
+            }
+        }
+        return 0;  // Return 0 if no hit
+    }
+
+    method int updateAlienShots() {
+        var int result;
+        var AlienShots alienShotObj;
+	var boolean result;
+
+	let alienShotObj = AlienShots.new();
+	let result = alienShotObj.update(); // calls the method correctly
+        return result;
+    }
+
+    method void drawGameOver() {
+        do Screen.clear();  // Clear the screen
+        do Screen.drawString(150, 250, "Game Over");  // Display Game Over message
+        return;
+    }
+}

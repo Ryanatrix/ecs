@@ -1,0 +1,231 @@
+class Sprites {
+
+    static Array spriteTableA;
+    static Array spriteTableB;
+    static Array sprite1;
+
+    function void init() {
+        var int i, val1, val2;
+        let spriteTableA = Array.new(17);
+        let spriteTableB = Array.new(17);
+
+        let spriteTableB[0] = 0;
+        let spriteTableB[1] = 1;
+        let spriteTableA[0] = 1;
+        let spriteTableA[1] = 2;
+
+        let i = 2;
+        while (i < 16) {
+            let val1 = Math.multiply(spriteTableA[i - 1], 2);
+            let spriteTableA[i] = val1;
+            let val2 = spriteTableA[i] - 1;
+            let spriteTableB[i] = val2;
+            let i = i + 1;
+        }
+
+        let sprite1 = Sprites.createSprite(~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0);
+
+        return;
+    }
+
+    function Array createSprite(int a, int b, int c, int d, int e, int f, int g, int h) {
+        var Array sprite;
+        let sprite = Array.new(16);
+
+        let sprite[0] = ~a;
+        let sprite[1] = ~b;
+        let sprite[2] = ~c;
+        let sprite[3] = ~d;
+        let sprite[4] = ~e;
+        let sprite[5] = ~f;
+        let sprite[6] = ~g;
+        let sprite[7] = ~h;
+
+        return sprite;
+    }
+
+    function int xor(int a, int b) {
+        return ((a & ~b) | (~a & b));
+    }
+
+    function int drawSpriteXOR(Array sprite, int x, int y) {
+        var int screenPtr, lowMask, highMask, maskLow, maskHigh;
+        var int i, offset, word1, word2, part1, part2, result, result2;
+        var boolean collision;
+
+        if (x > 511 | y > 255) {
+            do Output.printInt(0);
+            return 0;
+        }
+
+        let collision = false;
+        let screenPtr = 16384 + Math.multiply(y, 32) + Math.divide(x, 16);
+        let lowMask = util.mod(x,16);
+        let highMask = 16 - lowMask;
+        let maskLow = spriteTableB[lowMask];
+        let maskHigh = spriteTableA[lowMask];
+        let i = 0;
+
+        while (i < 8) {
+            let offset = screenPtr + Math.multiply(i, 32);
+
+            if (lowMask = 0) {
+                let word1 = ~Memory.peek(offset);
+                let result = Sprites.xor(word1, sprite[i]);
+                if (~(result) = (word1 | sprite[i])) {
+                    let collision = true;
+                }
+                do Memory.poke(offset, ~result);
+            }
+            if (~(lowMask = 0)) {
+                let word1 = ~Memory.peek(offset);
+                let part1 = Sprites.shiftLeft(sprite[i], lowMask) & maskLow;
+                let result = Sprites.xor(word1, part1);
+                if (~(result) = (word1 | part1)) {
+                    let collision = true;
+                }
+                do Memory.poke(offset, ~result);
+
+                let word2 = ~Memory.peek(offset + 1);
+                let part2 = Sprites.shiftRight(sprite[i], highMask) & maskHigh;
+                let result2 = Sprites.xor(word2, part2);
+                if (~(result2) = (word2 | part2)) {
+                    let collision = true;
+                }
+                do Memory.poke(offset + 1, ~result2);
+            }
+            let i = i + 1;
+        }
+
+        return collision;
+    }
+
+    function int drawSprite(Array sprite, int x, int y) {
+        var int screenPtr, lowMask, highMask, maskLow, maskHigh;
+        var int i, offset, word1, result, word2, result2;
+
+        if (x > 511 | y > 255) {
+            do Output.printInt(0);
+            return 0;
+        }
+
+        let screenPtr = 16384 + Math.multiply(y, 32) + Math.divide(x, 16);
+        let lowMask = util.mod(x,16);
+        let highMask = 16 - lowMask;
+        let maskLow = spriteTableB[lowMask];
+        let maskHigh = spriteTableA[lowMask];
+        let i = 0;
+
+        while (i < 8) {
+            let offset = screenPtr + Math.multiply(i, 32);
+
+            if (lowMask = 0) {
+                do Memory.poke(offset, ~sprite[i]);
+            }
+            if (~(lowMask = 0)) {
+                let word1 = ~Memory.peek(offset);
+                let result = ~(word1 & (Sprites.shiftLeft(sprite[i], lowMask) & maskLow));
+                do Memory.poke(offset, result);
+
+                let word2 = ~Memory.peek(offset + 1);
+                let result2 = ~(word2 & (Sprites.shiftRight(sprite[i], highMask) & maskHigh));
+                do Memory.poke(offset + 1, result2);
+            }
+            let i = i + 1;
+        }
+
+        return 0;
+    }
+
+    function int eraseSprite(Array sprite, int x, int y) {
+        var int screenPtr, lowMask, highMask;
+        var int i, offset, word1, word2, result, result2;
+
+        if (x > 511 | y > 255) {
+            do Output.printInt(0);
+            return 0;
+        }
+
+        let screenPtr = 16384 + Math.multiply(y, 32) + Math.divide(x, 16);
+        let lowMask = util.mod(x,16);
+        let highMask = 16 - lowMask;
+        let i = 0;
+
+        while (i < 8) {
+            let offset = screenPtr + Math.multiply(i, 32);
+
+            if (lowMask = 0) {
+                let word1 = ~Memory.peek(offset);
+                let result = ~(word1 & ~sprite[i]);
+                do Memory.poke(offset, result);
+            }
+            if (~(lowMask = 0)) {
+                let word1 = ~Memory.peek(offset);
+                let result = ~(word1 & ~Sprites.shiftLeft(sprite[i], lowMask));
+                do Memory.poke(offset, result);
+
+                let word2 = ~Memory.peek(offset + 1);
+                let result2 = ~(word2 & ~Sprites.shiftRight(sprite[i], highMask));
+                do Memory.poke(offset + 1, result2);
+            }
+            let i = i + 1;
+        }
+
+        return 0;
+    }
+
+    function int clearXY(int x, int y) {
+        do Sprites.drawSprite(sprite1, x, y);
+        return 0;
+    }
+
+    function int shiftRight(int val, int amount) {
+        if (amount > 15) {
+            return 0;
+        }
+        return val / spriteTableA[amount];
+    }
+
+    function int shiftLeft(int val, int amount) {
+        var int i;
+        if (amount > 15) {
+            return 0;
+        }
+        let i = 0;
+        while (i < amount) {
+            let val = val + val;
+            let i = i + 1;
+        }
+        return val;
+    }
+
+    function void loadSprites() {
+        var Array sprite;
+        var int i, j;
+        // Example logic: Load predefined sprites into memory
+        let i = 0;
+        while (i < 5) {
+            let sprite = Sprites.createSprite(i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7);
+            do Sprites.drawSprite(sprite, Math.multiply(i, 20), Math.multiply(i, 10));
+            let i = i + 1;
+        }
+        return;
+    }
+
+       function void drawCannon(int x, int y) {
+        var Array cannonSprite;
+        // Replace binary literal 0b11110000 with its decimal equivalent, 240
+        let cannonSprite = Sprites.createSprite(240, 240, 240, 240, 0, 0, 0, 0);
+        do Sprites.drawSprite(cannonSprite, x, y);
+        return;
+    }
+
+    function void drawMissile(int x, int y) {
+        var Array missileSprite;
+        // Replace binary literal 0b00011000 with its decimal equivalent, 24
+        let missileSprite = Sprites.createSprite(24, 24, 24, 24, 0, 0, 0, 0);
+        do Sprites.drawSprite(missileSprite, x, y);
+        return;
+    }
+
+} // End of Sprites.jack

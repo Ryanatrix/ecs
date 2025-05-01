@@ -1,0 +1,98 @@
+class Alien {
+    static int OCTOPUS;
+    static int CRAB;
+    static int SQUID;
+    static Array octopusSprites;
+    static Array crabSprites;
+    static Array squidSprites;
+    static int explosionSprite;
+    field boolean isAlive;
+    field int type;
+    field int spriteIndex;
+
+    constructor Alien new(int t) {
+        do Memory.alloc(2);
+        let type = t;
+        let isAlive = false;
+        return this;
+    }
+
+    function void init() {
+        let OCTOPUS = 0;
+        let CRAB = 1;
+        let SQUID = 2;
+
+        let octopusSprites = Array.new(2);
+        do octopusSprites.set(0, Sprites.createSprite(-961, -8185, -16381, -14749, -16381, -1633, -3505, -12301));
+        do octopusSprites.set(1, Sprites.createSprite(-961, -8185, -16381, -14749, -16381, -3697, -6553, -3121));
+
+        let crabSprites = Array.new(2);
+        do crabSprites.set(0, Sprites.createSprite(-1057, -4677, -6133, -7645, -8189, -4089, -1041, -2057));
+        do crabSprites.set(1, Sprites.createSprite(-1041, -545, -2033, -3545, -8189, -6133, -5141, -4965));
+
+        let squidSprites = Array.new(2);
+        do squidSprites.set(0, Sprites.createSprite(-385, -961, -2017, -3505, -4081, -577, -1441, -2641));
+        do squidSprites.set(1, Sprites.createSprite(-385, -961, -2017, -3505, -4081, -1441, -2065, -1057));
+
+        let explosionSprite = Sprites.createSprite(-545, -4421, -2057, -1041, -12295, -1041, -2377, -4645);
+        return;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void drawXY(int x, int y, boolean frame) {
+        if (~isAlive) {
+            do Sprites.clearXY(x, y);
+            return;
+        }
+
+        
+        if (frame) {
+            let spriteIndex = 1;
+        }
+        if (~frame) {
+            let spriteIndex = 0;
+        }
+
+        if ((type - OCTOPUS) = 0) { // Corrected equality check
+            do Sprites.drawSprite(octopusSprites[spriteIndex], x, y);
+        }
+        if ((type - CRAB) = 0) { // Corrected equality check
+            do Sprites.drawSprite(crabSprites[spriteIndex], x, y);
+        }
+        if ((type - SQUID) = 0) { // Corrected equality check
+            do Sprites.drawSprite(squidSprites[spriteIndex], x, y);
+        }
+        return;
+    }
+
+    method void drawExplosionXY(int x, int y) {
+        do Sprites.drawSprite(explosionSprite, x, y);
+        return;
+    }
+
+    method void setAlive(boolean alive) {
+        let isAlive = alive;
+        return;
+    }
+
+    method boolean getIsAlive() {
+        return isAlive;
+    }
+
+    method int getHitPoints() {
+        if ((type - OCTOPUS) = 0) { // Corrected equality check
+            return 10;
+        }
+        if ((type - CRAB) = 0) { // Corrected equality check
+            return 20;
+        }
+        if ((type - SQUID) = 0) { // Corrected equality check
+            return 30;
+        }
+        return 0; // Default return value
+    }
+}

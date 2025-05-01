@@ -1,0 +1,91 @@
+class Util {
+	static int i;
+	static int digits;
+	static int j;
+	static int q;
+    // Outputs a message to the screen at the specified location
+    function void outputMessage(String message, int x, int y) {
+    	do Output.moveCursor(x, y);
+    	do Output.printString(message);
+    
+    	         // Declare i as an int.
+    	let i = 0;
+    	while (i < message.length()) {
+        	do Util.reverseChar(i, x + i);
+        	let i = i + 1;
+    	}
+    	do message.dispose();
+    	return;
+	}
+
+
+    // Outputs an integer to the screen at the specified location
+    function void outputInt(int number, int x, int y) {
+        do Output.moveCursor(x, y);
+        do Output.printInt(number);
+
+        
+        if (number < 10) {
+            let digits = 1;
+        }
+	if (number < 100) {
+            let digits = 2;
+        }
+	if (number < 1000) {
+            let digits = 3;
+        }
+	if (number < 10000) {
+            let digits = 4;
+        }
+	if (number >10000) {
+            let digits = 5;
+        }
+
+
+        let i = 0;
+        while (i < digits) {
+            do Util.reverseChar(i, x + i);
+            let i = i + 1;
+        }
+        return;
+    }
+
+    // Reverses a character for display on the screen
+    function void reverseChar(int i, int pos) {
+        var int baseAddress, byte, result;
+        let baseAddress = 16384 + (11 * i) * 32 + (pos / 2) + 32;
+        
+       	
+	let q =  Util.mod(pos, 2);
+        let j = 0;
+        while (j < 11) {
+            let byte = Memory.peek(baseAddress);
+            if (q = 0) {
+                let result = (~byte & 255) | (byte & -256);
+            } 
+	    if (~q = 0) {
+                let result = (byte & 255) | (~byte & -256);
+            }
+            do Memory.poke(baseAddress, result);
+            let j = j + 1;
+            let baseAddress = baseAddress + 32;
+        }
+        return;
+    }
+
+    // Clears the screen
+    function void clearScreen() {
+        var int address;
+        let address = 16384;
+        while (address < 24576) {
+            do Memory.poke(address, -1);
+            let address = address + 1;
+        }
+        return;
+    }
+
+    // Computes the modulus of two numbers
+    function int mod(int a, int b) {
+        return a - (a / b) * b;
+    }
+}
